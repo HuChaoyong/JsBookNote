@@ -706,3 +706,78 @@ function hcy() {}; typeof hcy; => 'function'
         });
         book.year = 2005;
         console.log(book.editioin);
+
+        以上代码创建了一个book对象，定义了2个属性：_year和edition.  _year 前面的下划线是一种常用的记号，表示只能通过对象方法访问的属性
+        // 如果只有 getter 就表示只能读不能写， 只有setter表示只能写不能读
+        有旧方法： 
+        book.__defineGetter__('year', function() {return ...});
+        book.__defineSetter__('year', function() {this.* = ..});
+
+        定义多个属性:
+        Object.defineProperties(book {
+                _year: {
+                        value: 2004
+                },
+                editioin: {
+                        value: 1
+                },
+                year: {
+                        get: function() {
+                                return this._year;
+                        },
+                        set: function(nv) {
+                                if (nv > 2004) {
+                                        this._year = nv;
+                                        this.editioin += nv - 2004;
+                                }
+                        }
+                }
+        });
+        该创建出来的 book 和上节的一样，懂了吧
+
+        获取这些属性：
+        Object.getOwnPropertyDescriptor(book, 'year'); // => 【访问器】属性 如果是数据就是 【数据】属性
+        可以对任意对象 DOM 或者 BOM 使用该方法获取属性
+
+2. 创建对象（期待得一匹）
+        由于每次需要对象的时候，如果像上面一样 var book = {...}； // 代码冗余太厉害了
+        于是出现了工厂模式:
+        function creatPerson(name, age, job) {
+                var o = new Object();
+                o.name = name;
+                o.age = age;
+                o.job = job;
+                o.sayName = function() {
+                        alert(this.name);
+                };
+                return o;
+        }
+        var person1 = creatPerson('hcy', 24, 'programmer');
+        // 虽然解决了代码冗余，创建对象也容易，但是，没有解决识别对象的类型、 于是就有了
+        构造函数模式：
+        在前面介绍过， 构造函数可以用来创建特定类型的对象， 像Object、Array这样的原生构造函数，在运行时会自动出现在执行环境中，
+        此外，也可以创建自定义构造函数，从而定义对象类型和方法
+        function Person(name, age, job) {
+                this.name = name;
+                this.age = age;
+                this.job = job;
+                this.sayName = function() {
+                        alert(this.name);
+                }
+        }
+        var newHcy = new Person('hcy', 24, 'Programmer');
+        var newZj = new Person('zj', 23, 'Teacher');
+        //对比工厂模式， 构造函数模式有这几处不同
+        1.没有显式创建对象
+        2.直接将属性和方法赋给了 this 对象
+        3.没有 return
+        // 使用 new 创建对象， 会经历以下几个步骤
+        1）创建一个新对象
+        2）将构造函数的作用域赋给新对象（this指向）
+        3）执行构造函数中的代码（添加属性方法）
+        4）返回新对象
+        // newHcy 和 newZj 分别保存这Person的不同实例，但是！！！ 构造函数是一样的， 即 constructor();
+        newHcy.constructor === Person; // => true
+        
+
+

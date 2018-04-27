@@ -9,31 +9,43 @@
   <body>
   </body>
   <script>
-    var book = {
-      _year: 2004,
-      edition: 1
-    };
-    Object.defineProperty(book, "year", {
-      get: function () {
-        return this._year;
-      },
-      set: function (newValue) {
-        if (newValue > 2004) {
-          this._year = newValue;
-          this.edition += newValue - 2004;
-        }
-      }
-    });
-    book.year = 2005;
-    console.log(book);
+    // var book = {
+    //   _year: 2004,
+    //   edition: 1
+    // };
+    // Object.defineProperty(book, "year", {
+    //   get: function () {
+    //     return this._year;
+    //   },
+    //   set: function (newValue) {
+    //     if (newValue > 2004) {
+    //       this._year = newValue;
+    //       this.edition += newValue - 2004;
+    //     }
+    //   }
+    // });
+    // book.year = 2005;
+    // console.log(book);
 
-    var p = {};
-    Object.defineProperty(p, 'name', {
-      writable: true,
-      value: "Nicholas"
-    });
-    p.name = 'cc';
-    console.log(p);
+    // var p = {};
+    // Object.defineProperty(p, 'name', {
+    //   writable: true,
+    //   value: "Nicholas"
+    // });
+    // p.name = 'cc';
+    // console.log(p);
+
+    function Person(name ,age) {
+      this.name = name;
+      this.age = age;
+      this.sayName = function() {
+        alert(this.name);
+      }
+    }
+    var p1 = new Person('hcy', 24);
+    var p2 = new Person('zj', 23);
+    console.log(p1.constructor === p2.constructor);
+
   </script>
 
 </html>
