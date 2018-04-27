@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <title>camera</title>
+
+<body>
+</body>
+<script>
+  // var b = {
+  //   valueOf: function() {
+  //     console.log('调b')
+  //     return '0xF';
+  //   }
+  // };
+
+  // var a  = {
+  //   valueOf: function() {
+  //     console.log('调a!')
+  //     return 'a';
+  //   },
+  //   // toString: function() {
+  //   //   console.log('fuc');
+  //   //   return '0xFF';
+  //   // }
+  // };
+
+  // console.log(a > 0);
+  // console.log('a' > 0);
+  // console.log('a'.charCodeAt());
+  // var loc = {
+  //   name: {a: 1},
+  //   age: 12,
+  //   height: '213'
+  // };
+
+  var a = { a: { a: '要够深才能制造这个幻觉' } }  // ← 记住我的模样
+  console.group('实验1')
+  console.log('这个a应该是这样：%s', JSON.stringify(a))
+  console.log('“实际”上是这样%o', a)
+  console.log('然后他们惊呼“console.log是异步的”，原因实际上在Object右边的"i"图标里写着')
+  a.a.a = '我变了'
+  console.groupEnd('实验1');
+
+  function getValue() {
+    let c = 2;
+    console.log(arguments);
+    // return ;
+  }
+
+  let c = getValue(1,2,3,[1,2], '111');
+  let d = getValue('aaa', 222);
+  console.log(c);
+  console.log(getValue());
+
+  function changeV(x) {
+    x.x.x = 123;
+  }
+
+  let newX = {x: {x: 'hcy'}};
+  changeV(newX);
+  console.log(newX);
+
+  function setName(obj){  
+    obj.name='Nicholas';  
+    obj=new Object();  
+    obj.name="Greg";  
+}  
+var person=new Object();  
+setName(person);  
+// alert(person.name);
+console.log(person);
+
+let arr = [1,2,3,4];
+let str = '1234';
+
+function tc7(input) {
+  input = input + '5678';
+  console.log('时代在召唤', input);
+  return input;
+}
+
+function tc8(input) {
+  return input.push([5,6,7,8]);
+}
+
+function tc9(input) {
+  console.log(input);
+  input = '2234';
+  return [input].concat([5,6,7,8]);
+
+}
+  console.log('第七套体操', tc7(str), str);
+  console.log('第八套体操', tc8(arr), String(arr));
+  console.log('第九套体操', tc9(arr), arr);
+
+  let hcy = 'huchaoyong';
+
+  tc7(hcy);
+  console.log(hcy);
+  
+</script>
+</html>

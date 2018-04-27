@@ -1,0 +1,708 @@
+1. 在函数(function) 中使用 var 声明变量时， 会创建局部变量， 如果不使用 var声明，则会创建全局变量
+
+2. typeof 操作符， 可以加 () 可以不加
+typeof null 或者 typeof {}  => 'object'
+typeof function => 'function'
+
+3. IEEE754的32位表示方法
+
+S[1] J[8] N[23]
+S 为数符 1位 表示正负的，  0 正 1 负
+J 为阶码 8 位 阶码 = 阶码真实的值  +  01111111
+N 尾数   23位  尾数 = 真实尾数 - 1   （真实尾数通通表示成 1.*  这种形式）
+如 2进制的  -(0.11) = - (1 + 0.1) * 2^(-1)
+那么， S 就是 1
+J 就是 -1 + 127 = 01111110
+N 就是 100 00000 00000 00000 00000    
+合起来就是    10111111010000000000000000000000   
+
+4. 补码，反码为什么存在，
+计算机的减法都是加法，通过 ‘模’ 将 减法转换成 加法的。
+比如 
+9 - 7 = 2
+9 + (10 - 7) = 12   多出来的 ’1‘ 可以看出之前的那个 7 的正负号， 正因为这个原因，才会有符号位的产生。
+
+
+
+5.各类数据
+
+Undefined
+var message; // message 就是 undefined
+
+Null
+var car = null; //  typeof car  =>  'object'
+
+Boolean
+转换为true的情况:  true, 任何非空字符串、任何非0数字、任何对象、 n/a
+转换位false的情况： false、 ""、 0、NaN、 null、 undefined
+
+Number
+var a = 78; (10进制)
+var b = 078; (8进制，错误的表示方法，会转换成10进制)  0 开头
+var c = 077; (8进制的77， 10进制的63)
+var d = 0xA; (16进制的10)  0x 开头
+
+3.124e4  => 3.124 *  10^4   => 31240
+1.223e-3 => 1.223 * 10 ^ -3  => 0.001223
+补: 0.1 + 0.2 =>  0.30000000000000004
+
+NaN   (Not a Number)
+判断操作，  isNaN(obj)  函数, 如果obj 能够被转换成数值，那么就返回false，否则返回true，
+如果 obj 是对象，那么， 对象的 valueOf的返回值将被用来转换
+补：  NaN === NaN  ,   NaN == NaN    都是 false！！！  okashii   = = 
+
+数值转换； Number(), parseInt(),  parseFloat()
+Number()规则
+true => 1;  false => 0;  null => 0; undefined => NaN
+"" => 0; "011" => 11;  "0xf" => 15； "0xF" => 15; 其他 => NaN
+对象a,则调用a的valueOf(),将其返回值按上面的处理，如果返回值是对象，则调用a.toString() 返回值按上面的处理;
+如果 a.toString()的返回值不能处理，就会报错！ 测试于 chrome 63.0.3239.132，Firefox 59.0.1 
+parseInt('AF', 16);  => 175
+parseFloat('AF', 16); => NaN
+parseInt('0XA'); => 10
+parseFloat('OXA'); => 0
+parseInt('3.1e4'); => 3
+parseFloat('3.1e4'); => 31000
+
+
+不简单的 string 类型
+
+\n 换行  
+\t 制表位
+\b 空格
+字符串的特点， ECMA中的字符串是不可变的，也就是说，一旦创建，他们的值就不能改变，要改变，就要先销毁原来的字符串，然后，用另一个包含新值的字符串填充该变量。
+let lang = "Java";
+lang = a + "Script";
+lang开始包含 "Java",然后，第二行，将 lang重新定义为 "Java" 与 "Script"的组合;
+先创建一个能容纳 10个字符串的新字符串，然后，填充 "Java" 和 "Script" ，最后一步销毁 原来的 "Java" 和 "Script"
+
+number，boolean，object，string 都由 toString() 方法(字符串的toString是返回字符串的副本)； null 和undefined 是没有的！
+
+String(); 是啥都能转换的， null => 'null' , undefined => 'undefined' ； NaN => NaN
+
+Object 对象！！！ 这可是对象啊～～～
+var o = new Object();
+Object的每个实例都具有下列属性和方法
+1.   constructor();  保存着用于创建当前对象的函数. 比如o的构造函数就是  Object();
+2.  hasOwnProperty(name);  检查对象是否含有 name 属性. 不是原型链中
+3. isPrototypeOf(object); 检查传入的对象是否是传入对象的原型.
+4. propertyIsEnumerable(name);  检查给定的属性能否使用  for-in  循环
+5. toLocaleString()； 返回对象的字符串表示，该字符串与执行环境的地区对应
+6. toString()； 返回对象的字符串表示
+7. valueOf()；返回对象的字符串、数值或布尔值表示， 通常与 toString()相同
+
+3.5  操作符
+1. 递增和递减操作符  ++ ， --
+    规则: ① 在应用于一个包含有效数字字符的字符串时,先将其转换为数字值
+         ② 在应用于一个不包含有效数字字符的字符串时,将变量的值设置为 NaN
+         ③ 在应用于布尔值 false 时,先将其转换为 0， true 转为1
+         ④ 浮点， 正常加减
+         ⑤ 对象时， 先调用 valueOf()，对取得的东西，进行前面的操作，如果是 NaN,则调用toString()在进行前面操作，如果 toString()返回的是Object，那么会报错
+
+2. 一元加和减操作符
+var a = '023';
+a = +a; // 不管a是什么，先按照 ++ -- 的数值转换规则，转换成数值. 由于是 + 号，那么， 就是原本的值
+        // 如果是 -a ，就会先转换值，然后，在取负
+
+
+
+5. 位操作
+①非  ~
+所有位取反.  ~1 => -2
+为什么是-2,因为没有两个0，所以就从0|-1 开始，对半分
+
+②与
+32位一一对齐， 同为1， 与操作结果为1， 否则为0
+25&3 => 1
+
+③或 两个中有一个为1，则操作结果为1，否则为0
+25 | 3 =>  27
+
+④异或
+两个相同，既同为1或者同为0，操作结果为1， 否则为0
+25 ^ 3 => 26
+
+⑤左移 (数值位，不包含符号位)
+2 << 5   => 64
+
+⑥右移 (数值位， 不包含符号位)
+
+64 >> 5    => 2
+
+⑦ 有符号的右移动， 既所以位，32位都要向右移动，包括符号位
+
+-64 >>> 10   =>  4194303
+
+6.布尔操作符
+
+①逻辑非， 先将要操作的数据，转换成 Boolean类型，再对其求反
+
+②逻辑与，这玩意儿是有返回值的！！！而且是短路操作符， 第一个返回了，就不管第二个了
+a && b；
+如果 a或b有一个是 null、NaN、undefined  那么就返回 null、NaN、undefined
+如果a是对象，那么返回b;
+如果b是对象，则只有在a的求值为true时，才会返回该对象
+如果ab都是对象，那么返回b
+
+③逻辑非， 也是有返回值的,它也是短路操作符， 第一个返回了，就不管第二个了
+a || b
+如果 ab都是 null、NaN、undefined  那么就返回 null、NaN、undefined
+如果a是对象，那么返回a;
+如果a求值的结果是false， 则返回b
+
+7. 乘性操作符
+① 乘  *  
+规则如下: 1 。如果值超过 范围， 用 Infinity 表示正负的，
+        2. 如果有一个操作数是 NaN， 那么结果是 NaN
+        3. Infinity * 0  => NaN
+        4. Infinity * 1  => Infinity
+        5. 若一个操作数不是数值，则将其用 Number()  操作后，再进行上面的规则
+
+② 除  /
+规则如下：    1. 如果超出范围，用 Infinity 表示
+            2. 如果有一个操作数是 NaN，则结果是 NaN
+            3. Infinity  /  Infinity  =>  NaN;  0 / 0 => NaN;
+            4. Infinity / 1  => Infinity ;  1 / 0 => Infinity
+            5. 若有一个操作数是对象，那么，在后台用 Number() 处理后，在应用上面的规则
+
+③ 求余 %
+规则如下：    1. Infinity  %  233  =>   NaN
+            2. 233 % 0 =>   NaN
+            3. Infinity  %  Infinity  => NaN
+            4. 123 % Infinity  => 123   ;  0 % Infinity  => 0
+            5. 若有个操作数不是数值，则用 Number()处理后，再应用上面的规则
+
+8. 加性操作
+①加法 +
+            1. 如果有个操作数是 NaN，则结果是 NaN
+            2. Infinity + Infinity => Infinity;  -Infinity + -Infinity => -Infinity
+            3.  Infinity + (-Infinity) =>  NaN
+            4. +0 + +0 => +0;  -0 + -0 => -0;  +0 + -0 => +0;
+            5. 如果有一个操作数是字符串，那么 {
+                A. 两个操作数都是字符串，则将字符串拼接起来
+                B.  如果只有一个操作数是字符串，则将另一个操作数转换成字符串，再将2个字符串拼接起来
+            }
+②减法 -
+            1.如果有一个操作数是NaN，那么结果就是 NaN
+            2. In - In =>  NaN；  -In - (-In) => NaN
+            3. In - (-In) => In;  -In - In  => -In
+            4. +0 - (+0) => +0;  +0 - (-0)  => +0;  //!!!! 和书上的不一致， P67页， 测试于chrome
+
+9. 关系操作符
+1. <  ,  >,  <= ,  >=
+        规则:
+        1. 都是数值， 数值比较
+        2. 都是字符串，则按照字符串对应字符编码值比较;(只有都是字符串才这么搞！！！)
+        3. 若一个是数值，则将另一个转换成数值，再比较
+        4. 如果一个是对象，则调用 valueOf() 方法，用得到的结果进行前面的比较，若没有valueOf(),则调用toString()
+        5. 如果一个操作数是布尔值，则转换成数值
+demo: 'B' < 'a'  true;   '23' < '3'   true;  '23' < 3  false;   'a' < 3  false; Number('a') => NaN
+
+2. 相等操作符
+最早这帮子人在比较对象时，会在比较前，转换成相似的类型，后来，有哥们儿说，你这转换合理咩？
+最后，这帮子人，就搞了个 等(==)和全等(===)的概念。 等，转换后再比较。全等，只比较，不转换。
+        等(==)的规则
+        1. 如果有一个操作数是布尔值，则在比较前， false => 0, true => 1
+        2. 如果一个操作数是字符串，另一个是数， 则在比较前将字符串转换成 数值
+        3. 如果一个是对象，另一个不是对象，则调用对象的 valueOf(). 用得到的基本类型按照前面的规则比较
+        4. null == undefined   => true
+        5. NaN 是怪物， 有那玩意儿，都是 false。
+        6. 如果2个都对象， 比较是不是指向同一个对象，如果是，返回 true， 不是 返回 false
+demo：  NaN != NaN   => true ; false == 0 true;  undefined == 0   false;   null == 0  true;  '5' == 5    true;
+
+        全等(===)的规则
+        1. 如果类型不相同， 肯定就不相等咯
+        2. null === undefined   =>  false
+3. 赋值操作符
+
+        1. <<=
+        2. >>=
+        3. >>>=  (这些都tm没见过！！！)
+
+4. 逗号操作符
+
+        1. let num1 = 1, num2 = 2, num3 = 3;
+        2. num = (5, 3, 2, 1, 0);  // num = 0, 总会返回表达式的最后一项
+
+5. for-in 
+        遍历属性时，没顺序可言，safari 3 以前， for-in 有个bug， 导致某些属性返回2次
+
+6. label 语句，给语句添加标签， 一般都是加在循环语句上， 嵌套循环时，指定跳出的循环
+
+        loop1: for (let i = 0; i < 10; i++) { ... }
+
+7. with ????
+        with 的作用是将代码的作用域设置到一个特定的对象中。
+        with (expression) statement;
+
+        demo:  var qs = location.search.substring(1);    var hostName = location.hostname;   var url = location.href;
+        用with 改写
+        with (location) {
+                var qs = search.substring(1);
+                var hostName = hostname;
+                var url = href;
+        }
+
+8. switch
+                switch(expression)  表达式和 case 中的比较，使用的是全等， ===
+
+骚操作 =>  let num = 25;
+        switch (true) {
+                case num < 0:
+                        console.log('less than 0.');
+                        break;
+                case num >= 0 && num <= 10:
+                        console.log('betwween 0 and 10');
+                        break;
+                case num > 10 and num <= 20:
+                        console.log('between 10 and 20');
+                        break;
+                default:
+                        console.log('default value');
+        }
+
+9. 函数 function
+
+        reutnr ;  // 表示返回 undefined, 和没有return 一样， 默认就是 undefined
+
+严格模式下：  1. 不能把函数命名位 eval 或 arguments
+            2. 不能把参数命名为 eval 和 arguments
+            3. 不能出现两个命名相同的函数
+
+        函数的参数， ECMAScript 中的参数在内部是用一个数组来表示的。函数接受到的始终都是这个数组，而不关心数组中包含了啥；
+
+        function sayHi(firstname, lastname) {
+                alert('hello' + firstname + ',' + lastname);
+        }
+
+        function sayHi() {
+                alert('hello' + arguments[0] + ',' + arguments[1]);
+        }
+        这两个函数是一样的， 有参数名，只是为了方便标记
+
+        function doAdd(num1, num2) {
+                arguments[1] = 10;
+                alert(arguments[0] + num2);
+        }
+        ***** 每次执行这个 doAdd()函数都会重写第二个参数，将第二个参数的值修改为10. 因为arguments对象中的值会自动反映到对应的命名参数，
+        所以修改arguments[1]，也就修改了 num2， 结果他们都会变成 10 。 不过，他们的内存空间是独立的！！！ 但他们的值会同步。
+
+        另外还要记住，如果只传入了一个参数，那么为arguments[1] 设置的值不会反应到命名参数中。这是因为arguments对象的长度是由传入参数的
+        个数决定的。（arguments 的length = 1）
+
+        还有就是，没有传递值的命名参数将自动被赋值位 undefined， 这就跟变量没初始化一样。
+
+
+第四章
+变量、作用域和内存问题
+
+1. 基本类型和引用类型
+        Undefined,Null, Boolean, Number, String 按值访问
+
+var u; typeof u; => 'undefined'
+var n = null; typeof n; => 'object'
+function hcy() {}; typeof hcy; => 'function'
+
+2. 执行环境及作用域
+
+        每个函数都由自己的执行环境， 当执行流入一个函数时，函数的环境就会被推入一个环境栈中。而在函数执行完之后，栈将其环境弹出，把控制权返回给之前的执行环境。
+
+        当代码在一个环境中执行时，会创建变量对象的一个【作用域链】。作用域链的用途，是保证对执行环境有权访问的所有变量和函数的有序访问。
+        作用域链的前端，始终都是当前执行的代码所在环境的变量对象。如果这个环境是函数,则将其活动对象(activation object)作为变量对象。活动对
+        象在最开始时只包含一个变量,即 arguments 对象(这个对象在全局环境中是不存在的)。作用域链中
+        的下一个变量对象来自包含(外部)环境,而再下一个变量对象则来自下一个包含环境。这样,一直延
+        续到全局执行环境;全局执行环境的变量对象始终都是作用域链中的最后一个对象。
+
+        P75页的DEMO ？？？??? 
+
+        *** 没有块级作用域.
+
+        if (true) {
+                var color = 'blue';
+        }
+        for (var i = 0; i < 10; i++) {
+                ****
+        }
+        console.log(color, i); // 'blue', 10
+        如果将上述代码中的var 替换成 let,那么，color 和 i 在外部将变为不可访问
+
+        使用var声明的变量会自动被添加到最接近的环境中. 在函数内部，最接近的环境是函数的局部环境。在with语句中，最接近的环境是函数环境
+        如果初始化变量没有使用 var 声明， 改变量会自动被添加到全局环境中。
+        严格模式下，初始化未经声明的变量会导致错误
+
+        查询标识符: 就是逐级往上查找变量，直到找到，找不到就报错！
+
+3. 管理内存
+
+        解除一个值的引用并不意味着自动回收该值所占用的内存(Person = null); 解除引用的真正作用是让值脱离执行环境，
+        以便垃圾收集器下次运行时将其回收。
+
+小结：   1. 基本变量值在内存中占据固定大小的空间，因此被保存在【栈】内存中
+        2. 基本变量的赋值，就是复制.
+        3. 引用类型的值是对象，保存在【堆】内存中
+        4. 包含引用类型值的变量是包含的指针
+        5. 引用对象的赋值，是复制指针，不是复制对象
+        6. typeof , instanceof
+        7. 执行环境，有全局执行环境 和 【函数执行环境】 
+        8. 每次进入一个新执行环境，都会创建一个用于搜索变量和函数的作用域链
+        9. 离开作用域的值将被自动标记为可回收，在下次垃圾回收时，会被回收
+        10. ’标记清除‘ 是目前主流的垃圾收集算法. 给变量加标记，标记他是在使用，还是离开了环境（被回收）
+        11. ’引用计数‘ 垃圾回收算法，记录跟踪所有值被引用的次数(不再使用这个了)。在 IE9之前，BOM和DOM就是用的这个。一旦出现循环引用，就会炸。
+        12. 解除变量的引用(varibe = null)不仅有助于消除循环引用，而且，对垃圾回收也有好处。为确保有效回收，应该及时解除不再使用的全局对象。
+
+第五章 引用类型
+
+1. Object 好吧，又是对象
+        object.prop 和 object['prop'] 等价，不过，一般用 . 
+        用 {} 当做参数，来封装多个可选参数
+
+2. Array
+        构造方法:
+        var colors = new Array();
+        var colors = new Array(20);
+        var colors = new Array('red', 'blue', 'green');
+        // 当给定的是数值，那么会创建给定数值长度的数据，如果不是数值，就会创建只包含 那个值的一个数组；
+        另外，构造 Array时， new 可以省略
+        使用数组字面量表示时（var color = ['red'];），不会调用数组的构造函数。 Object 也是(var obj = {};)
+        给数组指定索引赋值时，如果索引越界，那么，就会在指定的索引处创建赋值，但，中间空白的地方就是 empty， 用forEach无法访问到
+
+        监测数组:
+        P106 instanceof ???？？？
+
+        ECMAScript5 新增了Array.isArray() 方法. 该方法的目的是确定某个值到底是不是数组.而不管他是在哪个环境中创建的.
+
+        数组转换.
+        每个Object都有 toLocaleString(), toString() 和 valueOf() 方法;
+        [1,2,3,4].toString 返回  1,2,3,4
+        [1,2,3,4].valueOf 返回的还是数组 [1,2,3,4]
+        [people1, people2].toLocaleString()  =>  people1.toLocaleString() , people2.toLocaleString()
+
+        .join(str)
+        用str分隔每个数组元素的 toString() 返回值.
+        如果数组总的某一项值为 null 或者 undefined ，那么， 在使用 join, toString,
+        toLocaleString, valueOf方法返回的结果中都以空字符串表示
+
+        栈方法( pop , push)
+        push后，返回新数组的长度.
+        pop后，返回被移除的那一项
+
+        队列方法( shift, unshift ) !!!
+        shift 删除数组的第一个元素，并返回该删除的元素
+        unshift 在数组最前端插入(多项), 并返回新数组的长度. 和 push()类似
+        [3,4,5].unshift(1,2); 数组变成 [1,2,3,4,5], 返回 5
+
+        重排序方法 ( reverse, sort )
+        reverse 反转,颠倒，  [1,2,3] =>  [3,2,1]
+        sort(function?) 排序; 默认是将 数组的元素的 toString值进行比较. 0, 1, 10, 15, 5
+        function cpmpare(value1, value2) { // 顺序是看 -1项！！！ 0,1,5,10,15
+                if (value1 < value2) return -1;
+                else if (value 1 > value2) return 1;
+                else return 0;
+        }
+
+        操作方法. (连接 concat，slice 切下一块, splice 随便切)
+        arr.concat(arg...);// 先复制一个 arr的副本(简单拷贝)， 然后，将arg添加到拷贝数组的末尾，并返回.
+        [1,2,3,4].concat(5,6,[7,8]) => 返回 1,2,3,4,5,6,7,8; 单元素直接放，数组，放数组的元素
+
+        arr.slice(start, end?); // 返回 从 start索引开始，end索引结束的所有项(不包括结束位置)
+        如果只有start，那么，就从start开始，返回到末尾的。 slice 不会影响原始数组
+
+        splice(delPos, delCount, insertArg...) 据说很强大
+        delPos 删除项的索引(删除会包含这个位置)， delCount 从删除项索引开始，删除的元素的数量， insertArg 插入的项， 可以是任意多个
+        返回被删除的项， 如果没有删除项，就会返回空数组
+
+        位置方法( indexOf, lastIndexOf )
+
+        arr.indexOf(item, startIndex) // 从startIndex位置开始查找startIndex , startIndex + 1, ...(没有就从0开始)，  
+        使得 arr[idx] === item 的 idx，如果没找到，返回 -1
+        arr.lastIndexOf(item, startIndex) // 从 startIndex 开始，倒序查找， startIndex， （startIndex - 1) ... 这样开始查找，同上返回
+
+        迭代函数 ( every, filter, forEach, map, some)       
+        arr.every((item, index, arr) => exp); // 如果 exp 都返回的是 true ，那么，该返回值就是true，否则返回false
+        arr.filter(...同上); // 返回由 exp 为true的项组成的数组 (俗称 过滤)
+        arr.forEach(...); // 这玩意儿没有返回值
+        arr.map(...); // 对于给定的每个 item， 返回 exp的返回结果项  组成的数组
+        arr.some(...); // 对任何 exp， 如有有一个exp 返回true ，就返回 true
+
+        这些个主， 都不会改变数组中本身包含的值 (不要动 item 里面的东西！)
+
+        归并方法 ( reduce, reduceRight )
+        arr = [1,2,3,4,5];
+        arr.reduce((previous, current, index, arr) => previous + current); // 计算所有项的和， 该操作会从 arr[1]开始迭代
+        因为， index = 1; 才会有 previous 项
+
+        arr.reduceRight((previous, current, index, arr) => ... 同上);
+        // 第一次执行， index = 3;  reduceRight(5, 4, 3, arr);
+
+3. Date类型(日期类型)
+
+        ECMAScript 中的Date类型是在早期Java中的 java.util.Date类基础上构建的
+
+        var now = new Date();
+        如果想创建精确的时间来创建Date，必须要传入该日期的毫秒.
+        为了简化这一操作，提供了2个方法
+        Date.parse(stringNumber) ; // 如果 stringNumber 不能转换成日期的毫秒，就会返回 NaN
+        如果将表示日期的字符串传给 new Date(string); 也会在后台调用 Date.parse(); // 如下所示
+        new Date('2018-04-17') =>  new Date(Date.parse('2018-04-17'));// 如果 '2017-04-33'  => NaN
+        注意：
+        new Date('0'); => 2000 01 01 ;
+        new Date('1'); => 2001 01 01;
+        new Date('2'); => 2001 02 01;
+        new Date('3'); => 2001 03 01;
+        ...
+        new Date('13'); => Invalid Date
+
+        和 Date.UTC(year[2018], month[5], day[13], hour[22], minute[55], second[58], millisecond[179]);
+
+        // 小技巧
+        获得开始时间  var start = +new Date(); // var a = +b; // 先将b以 ++ 的规则，转换成数组，再在前面 加上 +
+        获得结束时间  var end = +new Date();
+        比较： (new Date('2018')) < (new Date('2019')); // true
+
+4. RegExp (正则) 
+
+        var expression = / pattern / flags;
+        pattern => 表达式本体
+        flag => 标志(模式)  g 全局(global);  i 不区分大小写 (case-insensitive); m 多行 (multiline)在到达一行文本末尾时，还会继续查找下一行中是否存在符合的
+        eg: 
+        let exp1 = /[bc]at/i; // 匹配第一个 'cat' 或者 'bat' 不区分大小写
+        let exp2 = /.at/gi; // 匹配所有的以 'at' 结尾的 3个字符的组合，不区分大小写
+        let expA = /[bc]at/i;  和  let expB = new RegExp('[bc]at', 'i'); 等价
+        不过： 字面量模式下 /\[bc\]at/   要用字符串的话，就会变成  '\\[bc\\]at'; // 因为 \ 在字符串里面本身就是转义字符，要出现 \ 就必须用 '\\'
+
+        实例属性， 每个 exp 都是一个实例
+        exp.global:  是否开启了了g标志
+        exp.ignoreCase: 是否开启了 i 标志
+        exp.multiline: 是否开启了 m 标志
+        exp.source: 正则表达式的字符串
+        exp.lastIndex: 整数,表示开始搜索下一个匹配项的字符位置,从 0 算起
+
+        实例方法:
+        Reg.exec(str);
+        // 如果找到了匹配的文本， 则返回一个数组。
+        // 此数组的第 0 个元素是与正则表达式相匹配的文本，
+        // 第 1 个元素是与 RegExpObject 的第 1 个子表达式相匹配的文本（如果有的话）, 以此类推
+        // index 属性： 声明的是匹配文本的第一个字符的位置
+        // input 属性: 存放的是被检索的字符串 string
+        //否则， 返回 null
+        // 如果 Reg 标识了 g, 那么,每次调用 exec()都会在 str 中继续查找匹配项,没有g, 每次都是返回第一个找到的
+
+        Reg.text(str); // 如果 str 中有匹配 Reg的,就返回 true , 否则返回 false
+
+        构造函数属性:  RegExp的属性,有长属性名和段属性名
+
+        var str = 'I am a boy, from China';
+        var exp = /(.)oy/g;
+        if (exp.text(str)) {
+                RegExp.input; //  即 str
+                RegExp.leftContext; //匹配到的字符的左边的字符,此处是 'I am a ';
+                RegExp.rightContent; // 匹配到字符的右边的字符, 此处是 ', from China';
+                RegExp.lastMatch; // 最近一次匹配的项, 此处是 'boy';
+                RegExp.lastParen; // 最近一次匹配的捕获组(子表达式) ,这里就是 (.)  => b
+                RegExp.multiline; // 布尔值, 表示是否所有表达式都是用多行文本模式,
+        }
+        还有 $1, $2, $3 ..... $9 一共九个捕获组(子表达式)的存储
+
+         RegExp 的局限性
+         1. 向后查找(lookbehind)
+         2. 并集和交集类
+         3. 原子组
+         4. Unicode支持
+         6. s (single 单行) 和  x (free-spacing 无间隔) 匹配模式
+         7. 条件匹配
+         8. 正则表达式注释
+
+5. Function 类型 (最有趣的~)
+
+        1. 每个函数都是 Function 类的实例. 而且与其他实例一样,具有属性和方法. 由于函数是对象,所以, 函数名就像指针一样,
+         和对其他Object 类的引用一样.
+         三种声明方式
+         A:  function sum(num1, num2) { return num1 + num2; }
+         B:  var sum = function (num1 , num2) { return num1 + num2; } // 如果在 function 后面加 add, add 将会是未定义
+         C:  var sum = new Function('num1', 'num2', 'return num1 + num2');// 不推荐,不过,可以简单表示函数是对象.
+
+         既然函数是对象,那么,就可以允许有多个函数名, 即多个指针指向函数体
+         eg: function sum (num1, num2) { return num1 + num2; };
+         var anoSum = sum;  anoSum(1, 2); // return 3
+
+        . js的function 没有重载, 为什么? ? ?
+         因为第B种声明方式:
+         function addSome(num) { return num + 10;};
+         function addSome(num) { return num + 20;};
+         等价于:
+         var addSome = function(num) { return num + 10;};
+         addSome = addSome(num) { return num + 20;}; // 懂了吧, 直接覆盖! 重载, 不存在的~
+
+         函数声明和函数表达式 (A声明方式和 B声明方式的区别)
+         sum(1,2);
+         function sum(num1, num2) { return num1 + num2; }; // 这么写是没问题的! 因为解析器已经通过一个名为函数声明提升的过程,
+         读取并将函数声明添加到执行环境中. 对代码求值时,JS引擎在第一遍会声明函数并将它们放到 【源代码树的顶部】 ，秒啊～
+
+        sum(1,3);
+        var sum = function(num1, num2) { return num1 + num2; };// 肯定不用想， var 都没操作， 使用肯定就会报错， undefined
+
+        ××× 把函数当成参数 ×××
+        function callSomeFun(fun, args) { return fun(args); };
+        function addFun (num) { return num + 10; };
+        var res = callSomeFun(addFun, 20); // return 30;
+        *** 返回函数 ××× 据说超有用
+        function compareByProName(proName) {
+                return function(object1, object2) {
+                        let v1 = object1[proName];
+                        let v2 = object2[proName];
+                        // 不要用 return v1 - v2; 如果 v12是string ，就返回 NaN了！！！
+                        if (v1 < v2) {
+                                return -1;
+                        } else if (v1 > v2) {
+                                return 1;
+                        } else {
+                                return 0;
+                        }
+                }
+        }
+        // test
+        var data = [{name: 'hcy', age: 24}, {name: 'anata', age: 25}];
+        data.sort(compareByProName('name')); // data[0].name =>  'anata'  data[1].name => 'hcy'
+        console.log(JSON.stringify(data));
+        data.sort(compareByProName('age')); // data[0].age => 24   data[1].age => 25
+        console.log(JSON.stringify(data));
+
+        ×××× 函数内部属性 ××× （arguments, this) // arguments 在之前介绍过
+        1. arguments  的 callee属性，该属性是一个指针， 指向拥有这个arguments对象的函数;(当是匿名函数的时候，调用就要用这个，因为没有函数名)
+        eg: 递归 // 这样就只会出现一次函数名，就算该函数指针有其他名字， 该函数也能调用
+        function factorial(num) {
+                if (num <= 1) {
+                        return 1;
+                } else {
+                        return num * arguments.callee(num - 1);
+                }
+        }
+        2. this ; 当前环境
+        windows.color = 'red';
+        var o = { color: 'blue' };
+        function sayColor() { console.log(this.color); };
+        sayColor(); // 此时执行环境是 windows
+
+        o.sayColor = sayColor;
+        o.sayColor(); // 此时的执行环境是 o ,则 返回 o.color  => 'blue';
+        // 如果 o.color 不存在， 就会返回 undefined， 因为指定了 this 就只能在当前执行环境中搜索
+        注意： 如果是 console.log(color); 那么将遵循作用域链，在当前环境寻找 color, 如果找不到，就往上一级找
+        ××××牢记×××  函数的名字仅仅是一个包含指针的变量而已， 即使是在不同的环境中执行，全局的sayColor()和o.sayColor()指向的
+        仍然是同一个函数.
+        
+        .caller // 这个属性中保存的是 调用当前函数的引用 （代码）
+        eg: function outer() { inner(); };
+        function inner() { console.log(inner.caller); };
+        outer(); //  会显示=>  f outer() { innner(); };
+
+        *5: 函数的属性和方法 （.length  ,  prototype )
+        length 表示函数希望接受的命名参数的个数； function hcy (name, age) {};  console.log(hcy.length);// => 2
+
+        .apply(environment, args) 和 .call(evnironment, arg1, arg2, arg3 ...);
+        environment 表示函数的执行环境， args 表示函数的所有参数， 可以是 Array 对象， 可以是 arguments,
+        arg1 表示函数的第一参数(如果有的话), arg2 表示第二个...以此类推， 除此之外，这两个并无任何区别
+        // 这两个东西强大地方在于能够扩充函数的作用域。比如
+        var color = 'red';
+        var o = { color: 'blue' };
+        function sayColor() { console.log(this.color); };
+        sayColor(); // => red
+        sayColor.call(this);// this 就是window全局环境
+        sayColor.call(o); // 在 o 内部， this.color => blue
+
+        用 call, apply的好处是， 前面的例子中， 在 o 环境下使用 sayColor()要进行一次耦合， o.sayCOlor = sayColor;
+        相当于直接给 o 加了一个属性， 但是， 如果用 .call(o) 就没有这种耦合关系
+
+        还有个骚东西   .bind();
+        这玩意儿是干啥？  返回一个给定了环境的函数对象。 （调用.bind() 的函数本身不会受到影响）
+        eg:  var color = 'red'; var o = { color: 'blue' }; function say() { console.log(this.color); };
+        var newSay = say.bind(o);
+        newSay(); // => blue ； 把绑定了环境的函数实例赋给了 newSay
+        say(); // => red ； 但是函数本身运行没有影响
+
+6.基本包装类型 (Boolean, Number, String)
+
+        引出: var s1 = 'some text';   var s2 = s1.substring(2);
+        我们知道，基本类型值不是对象， 因而从逻辑上讲他们不应该有方法(尽管我们是这么想的，但是，它们确实有方法)，
+        其实，为了让我们实现这种直观的操作，后台已经自动开始搞事情了， 当执行 var s2 这段代码时， 访问过程处于一种读取模式，
+        也就是要从内存中读取这个字符串的值，而在读取模式中访问字符串时，后台都会自动完成下列处理： 来了， 骚东西来了
+        1) 创建 String 类型的一个实例     var s1 = new String('some text');
+        2) 在实例上调用指定的方法        var s2 = s1.substring(2);
+        3) 销毁这个实例                 s1 = null
+        // 上面这三个步骤也适合  Boolean 和 Number
+        // 注意， 这个三个步骤是隐式的自动发生在后台的，我们无法对其进行操作和控制
+        var s1 = 'hcy'; // 基本字符串值
+        var s1 = new String('hcy'); // 对象， 引用类型
+        注意： 基本引用类型是 object
+        var b1 = new Boolean(false);
+        b1 && true  =>  true; ??? 因为 object 转换成 Boolean 是true
+        b1 instanceof Boolean; // true  不解释
+        false instanceof Boolean; // false 因为是基本类型，不是对象（引用类型）
+
+        Number实例的方法
+        var ss = 10.32112;
+        .toFixed(num);  ss.toFixed(2); => '10.32'// 显示几位小数,这里是2位
+        .toExponential(num); => ss.toExponential(3); => 1.032e+1 // 返回科学表示法， 
+        .toPrecision(num); => ss.toPrecision(3); => '10.2' 用3个数字表示 ss
+
+        String类型的方法
+        .match(RegExp); // 不解释
+        .search(RegExp); // 返回 RegExp第一次出现的位置的索引， 没有就返回-1
+        .replace(from, to); // 这里的 to 可以是函数！！！ to(match,  position ...[子串] , str[原字符串])；
+        .split(sym, length); // 根据 sym 分隔 string， length是可选，指定返回分割的数组长度
+        .localeCompare(b); // 如果 b 在字母表中的位置排在 str 之前， 返回 1， 之后 返回 -1， 相等 返回 0
+        String.fromCharCode(num); // num 是 字符ascii编码序号  String.fromCharCode(65) // 'A';
+
+7. 单体内置对象
+
+        由 ECMAScript 实现提供的、不依赖于宿主环境的对象,这些对象在 ECMAScript 《程序执行之前》就已经存在了
+        Global 对象
+        eval(str1) 方法 // 将 str 编译成 ECMAScript 在下一刻运行
+
+        Math 对象
+        .E   => 自然对数 e
+        .PI => π
+        .SQRT2 => 2的平方根
+        .min(a,b,c...args); // 数组求最小   var min = Math.min.apply(null, [1,2,3,4,5,6,8]); // 1
+        .max(a,b,c ...args);
+        舍入方法
+        .ceil(); 向上取整
+        .floor(); 向下取整
+        .rount(); 标准四舍五入
+        .random(); [0, 1) 的随机数
+
+
+第六章： 来了， 对象！！！
+ 1. 理解对象 (简单创建就不解释了 var a = new Object(); var a = {};)
+        内部的特性 [attribute]  描述了 [property] 的各种特征， 不过 attribute 不能直接访问，
+        规范里面把他们放在了两对儿方括号中，比如 [[Enumerable]]
+        1 【数据】属性 （四个： 
+        [[Configurable]] :能否通过 delete 删除属性从而重新定义属性，能否修改属性的特性， 能否把属性修改为【访问器】属性;
+        // 目前实践操作上来说，只有 delete 无法删除，其他不懂
+        [[Enumberable]]:表示是否可通过for-in循环返回属性。默认true;
+        [[Writable]]:表示是否可修改属性的值。默认true;
+        [[Value]]:包含该属性的数据值。读取/写入都是该值; 默认为undefined;
+
+         Configurable  设置为 false 以后， 你就再也改不回来了～
+
+        2. 【访问器】属性
+        [[Configurable]] :能否通过 delete 删除属性从而重新定义属性，能否修改属性的特性， 能否把属性修改为【访问器】属性;
+        [[Enumberable]]:表示是否可通过for-in循环返回属性。默认true;
+        [[Get]]： 在读取属性时调用的函数， 默认值为 undefined
+        [[Set]]:  在写入属性时调用的函数， 默认值位 undefined
+        访问器属性不能直接定义， 必须使用 Object.defineProperty()来定义
+
+        var book = {
+                _book: 2004,
+                editioin: 1
+        };
+        Object.defineProperty(book, 'year', {
+                get: function() { return this._year; },
+                set: function() {
+                        if (newValue > 2004) {
+                                this._year = newValue;
+                                this.editioin += newVlaue -2004;
+                        }
+                }
+        });
+        book.year = 2005;
+        console.log(book.editioin);

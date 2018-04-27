@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>测试</title>
+
+  <body>
+  </body>
+  <script>
+    var book = {
+      _year: 2004,
+      edition: 1
+    };
+    Object.defineProperty(book, "year", {
+      get: function () {
+        return this._year;
+      },
+      set: function (newValue) {
+        if (newValue > 2004) {
+          this._year = newValue;
+          this.edition += newValue - 2004;
+        }
+      }
+    });
+    book.year = 2005;
+    console.log(book);
+
+    var p = {};
+    Object.defineProperty(p, 'name', {
+      writable: true,
+      value: "Nicholas"
+    });
+    p.name = 'cc';
+    console.log(p);
+  </script>
+
+</html>

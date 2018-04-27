@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <title>camera</title>
+
+<body>
+</body>
+<script>
+  var b = {
+    valueOf: function() {
+      console.log('调b')
+      return '0xF';
+    }
+  };
+  var a  = {
+    valueOf: function() {
+      console.log('调a!')
+      return b;
+    },
+    toString: function() {
+      console.log('fuc');
+      return '0xFF';
+    }
+  };
+  console.log(Number(a)); 
+</script>
+</html>
