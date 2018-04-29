@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>对象测试</title>
+
+  <body>
+  </body>
+  <script>
+    function Person(a,b,c) {
+      this.name = a;
+      this.age = b;
+      this.job = c;
+    }
+
+    var p = new Person('hcy', 24, 'Programmer');
+    var o = new Object();
+    Person.call(o, 'newHcy', 25, 'like');
+    console.log(p instanceof Person);
+    console.log(o instanceof Person);
+  </script>
+
+</html>
