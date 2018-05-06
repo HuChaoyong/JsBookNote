@@ -125,3 +125,104 @@
         }
         // 但是，这样感觉很违和啊， 你就一个 构造函数，还要依赖一个全局函数，如果Person里面的函数实例比较多，那么岂不是更蛋疼？
         // 好吧， 就用原型模式来解决这个问题
+
+        原型理解：
+        创建的每一个函数都有一个 prototype(原型)属性， 这个属性是一个指针,指向一个对象 》 ，
+         ???   不过,要明确的真正重要的一点就是,这个连接存在于实例与构造函数的原型对象之间,而不是存在于实例与构造函数之间 ???
+        这个对象的用途是包含可以由特定的【所有实例】【共享】的属性和方法, 
+        而这个 prototype 所拥有的 constructor属性，指向了这个函数的构造函数
+        判断对象实例原型与构造函数之间的关系  Person.prototype.isPrototypeOf(person1); // true
+        表示  person1内部有一个指向 Person.prototype的指针
+        es5新增的，  Object.getPrototypeOf(person1) == Person.prototype; // true 同样的效果
+        Object.getPrototypeOf(person1).name ; // 返回 'hcy'
+
+        代码读取属性时，会在实例上去搜索，如果找不到，就在实例的原型中去找，找不到，就继续在原型的原型中去找，知道找不到，就undefined，
+
+        in 操作符，
+        1. for in循环，
+        2. 属性存在判断  'name' in Person ; // true  只要是有这个属性，不管是实例的还是原型的，只要有，就会返回true,
+                而 person1.hasOwnProperty('name'); // false   只有属性是在实例上时，才返回 true
+        Object.keys(obj); // 返回一个表示给定对象的所有可枚举属性的字符串数组；【对象自身可枚举的，不包括原型链上的！！！】
+        方便写 prototype的方式
+        function Person(){}
+        Person.prototype = {
+                name: 'new Name',
+                age: 24,
+                sayName: function () {console.log(this.name);}
+        };
+        但是，这么写就意味着， prototype.constructor 这个属性被干掉了，
+        但还是能用  instanceof 来判断对象的类型
+        const friend = new Person();
+        console.log(friend instanceof Object); // true
+        console.log(friend instanceof Person); // true
+        console.log(friend.constructor == Person); // false
+        console.log(friend.constructor == Object); // true
+        如果constructor重要，就在创建后，
+        用 Object.defineProperty(Person.prototype, 'constructor, {
+                enumberable: false,
+                value: Person
+        }); // 用这种方式定义，保证了 constructor的不可枚举性， 
+        不能直接 Person.prototype.constructor = Person; // 这样的 enumberable 是默认为 true的
+        var f1 = new Person();
+        Person.prototype.sayHi = function() {alert('hi);};
+        f1.sayHi(); // 'hi'
+        Person.prototype = {
+                constructor: Person,
+                sayNewHcy: function() {console.log('this is new Say Name');}
+        };
+        f1.sayNewHcy(); // error . undefined!!!
+        为什么？ 因为 这个 f1是在新的 prototype 赋值之前，它的 原型对象指向的是之前的，
+        不是新赋值后的，所以就没有 sayNewHcy
+
+        原型的弊端: 所有的都是共享的
+        因此： 创建自定义类型的最常见方式就是， 构造函数 + 原型， 比如下面这样
+        function Person(name, age, job) {
+                this.name = name;
+                this.age = age;
+                this.job = job;
+        }
+        Person.prototype = {
+                constructor: Person,
+                sayName: function () {console.log('name:' + this.name);}
+        };
+        或者，这样
+        function Person(name, age, job) {
+                // 属性
+                this.name = name;
+                this.age = age;
+                this.job = job;
+                // 方法
+                // 这样就放在构造函数里面完成了所有初始化操作，
+                // if 判断一般就判断一个就行了
+                if (typeof this.sayName !== 'function') {
+                        Person.prototype.sayName = function() {
+                                console.log(this.name);
+                        }
+                }
+        }
+        构建特殊数组
+        function SpecialArray() {
+                var values = new Array();
+                values.push.apply(values, arguments);
+                values.toPipedString = function () {
+                        return this.join("|");
+                }
+                return values;
+        }
+        var colors = new SpecialArray('red', 'yellow', 'green');
+        alert(colors.toPipedString()); // 'red|yellow|green'
+
+        稳妥构造函数， 所谓稳妥，是指没有公共属性，而且，其方法也不引用 this 对象，防止数据被其他应用程序改动时使用
+        function Person(name, age, job) {
+                var o = new Object();
+                o.sayName = function() {alert(name);} // 只用 sayName 方法才能访问到 实例中的name值
+                return o;
+        }
+        判断继承的关系（原型链关系）
+        A instanceof Person; // true
+        Person.prototype.isPrototypeOf(A); // true
+
+        注意！！！
+        function Mono() { this.color = 'hcy'; }
+        如果这么调用   Mono(); // 就会在当前的执行环境创建 color 这个属性
+        如果 const tp = new Mono(); // 这样就会在 tp 实例中创建 color 属性，而不会在当前实例中创建
