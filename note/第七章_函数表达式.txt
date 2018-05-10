@@ -61,3 +61,43 @@
     （是指 匿名函数的作用域链仍在引用这个活动对象, 换句话说，就是， 执行完compareByProName后，执行环境的作用域链会被销毁，但，活动对象不会，因为匿名函数还要用)
     直到匿名函数销毁后，compareByProName函数的活动对象才会销毁
 
+
+    function createFunctions2() { // result数组保存的是循环中i的最后的值，为什么？ 因为，调用result[x]的时候，i在里面，已经是循环完了的，
+      var result = new Array();
+      for (var i = 0; i < 10; i++) {
+        result[i] = function () {
+            return i;
+        };
+      }
+      return result;
+    }
+
+    function createFunctions1() { // 
+      var result = new Array();
+      for (var i = 0; i < 10; i++) {
+        result[i] = function (num) {// 这里为什么返回的就是函数的索引？ 因为，传了值进去，js只有传值的，传进去值是复制的
+          return function () {      // 如果没有传值， 将 里面的 return num 换成 return i ; 结果和上面一样
+            return num;
+          };
+        }(i);
+      }
+      return result;
+    }
+
+    this！！！
+    var name = "windows";
+    var obj = {
+      name: 'myObject',
+      getName: function() {
+        return function() {
+          return this.name;
+        }
+      }
+    };
+    console.log(obj.getName()()); // windows ？？？ 
+    //为什么是 windows? ，因为，在执行函数的时候，会搜索this 和 argument,
+    // 内部函数在搜索这两个时，函数的创建环境里面，是在 getName内部，不是 obj 内部，所以得不到obj.name
+    //加上，执行 obj.getName()()；是在全局，所以得到的是 ‘windows'
+  
+
+
