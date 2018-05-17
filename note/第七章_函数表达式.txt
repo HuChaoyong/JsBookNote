@@ -98,6 +98,46 @@
     //为什么是 windows? ，因为，在执行函数的时候，会搜索this 和 argument,
     // 内部函数在搜索这两个时，函数的创建环境里面，是在 getName内部，不是 obj 内部，所以得不到obj.name
     //加上，执行 obj.getName()()；是在全局，所以得到的是 ‘windows'
-  
+
+    4. 私有变量
+    在函数  function add(num1, num2) {var sum = num1 + num2; return sum;} 中的变量，
+    这三个变量是在函数内部 num1,num2,sum可以访问到的，然后，在外部则不能访问他们，
+
+    我们把有权访问私有变量和私有方法的方法成为 【特权方法】，比如
+    function MyObject() {
+      var privateVariable = 10;
+
+      function privateFunction() {
+        return false;
+      }
+
+      // 特权方法
+      this.publicMethod = function() {
+        privateVariable ++;
+        return privateFunction();
+      }
+    }
+    // 但是，这样创建 class 有缺陷，由于这这个方法是在构造函数内部定义的，那么，每次调用构造函数，都会创建相同的新的这个方法
+
+    静态私有变量
+    (function() {
+      var privateVariable = 10;
+
+      function privateFunction() {
+        return false;
+      }
+
+      // 构造函数
+      MyObject = function() {};// 注意！ 这里的 MyObject是没有声明的， 意思就是，这个MyObject将会是全局的
+
+      // 特权方法
+      MyObject.prototype.publicMethod = function() {
+        privateVariable ++;
+        return privateFunction();
+      }
+    })();
+    // 这样写，publicMethod 将会在原型链上，每次创建实例，调用该函数，都只是从原型链上去调用。解决了复用问题
+    // 但是， 这样做，会导致， 所有的实例，都会共享一个 privateVariable, 更改一个实例中的，所有实例中的都会改变
+
 
 
