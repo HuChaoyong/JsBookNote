@@ -96,8 +96,13 @@
     };
     console.log(obj.getName()()); // windows ？？？ 
     //为什么是 windows? ，因为，在执行函数的时候，会搜索this 和 argument,
-    // 内部函数在搜索这两个时，函数的创建环境里面，是在 getName内部，不是 obj 内部，所以得不到obj.name
-    //加上，执行 obj.getName()()；是在全局，所以得到的是 ‘windows'
+    // 内部函数在搜索这两个时，只会在  function() {return this.name;} 的执行环境中搜索，，而，是谁执行这个匿名函数？ 是 windows ，所以，就是 windows.name！
+    更直观的例子: 
+    var ooo = {
+      name: 'ooo',
+      getName: obj.getName();
+    };
+    ooo.getName(); // => 'ooo'
 
     4. 私有变量
     在函数  function add(num1, num2) {var sum = num1 + num2; return sum;} 中的变量，
@@ -139,5 +144,44 @@
     // 这样写，publicMethod 将会在原型链上，每次创建实例，调用该函数，都只是从原型链上去调用。解决了复用问题
     // 但是， 这样做，会导致， 所有的实例，都会共享一个 privateVariable, 更改一个实例中的，所有实例中的都会改变
 
+    一般创建的单例对象
+    var singleton = {
+      name: value,
+      method: function() {
+        // code
+      }
+    };
+    // 模块模式： 添加 私有变量 和 特权方法， 使其得到增强
+    var singleton = function() {
+      // 私有变量和私有函数
+      var privateVar = 10;
+      function privateFun() {
+        return false;
+      }
+      // 特权(公有)方法和属性
+      return {
+        publicProperty: true,
+        publicMethod: function() {
+          privateVar ++;
+          return privateFun();
+        }
+      }
+    }
 
-
+    // 增强模块模式 ，对返回的对象有有类型限制 ，比如： 必须是 Component 类型的
+    var singleton = function() {
+      // 私有变量和私有变量
+      var privateVar = 10;
+      function privateFun() {
+        return false;
+      }
+      // 创建对象
+      var object = new CustomType();
+      object.publicProperty = true;
+      object.publicMethod = function() {
+        privateVar ++;
+        return privateFun();
+      }
+      // 返回对象
+      return object;
+    }

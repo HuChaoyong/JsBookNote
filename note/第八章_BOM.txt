@@ -1,0 +1,24 @@
+1. window 对象
+    window是全局的作用域
+    var a = b; // 报错， 因为 b 没有定义
+    var a = window.b; // 不会报错！ 因为 window.b 未定义
+
+    系统对话框：
+    alert(); // 只有一个确定
+    confirm('确定要打开吗？'); // 会有2个选项， ok 返回true ，cancle 返回 false
+    prompt('info', 'default'); // 弹窗 info 文字， 并在框中默认填入 ’default'，
+    '确定'，返回 input框中的内容， ‘取消’ 返回 null 
+
+2. location 对象
+    .hash  // 返回URL中的hash (#号后跟零个或多个字符)
+    .host  // 返回服务器的名称和端口号，如果是 80默认的，就只返回服务器名
+    .hostname // 返回服务器名
+    .href  // 返回所有的 url
+    .pathname  返回目录名 http://23.106.129.100/usr/program?f=json  => '/usr/program'
+    .port // 返回端口名
+    .protocol // 返回协议名， 一般是 'http:' or 'https:'
+    .search   // 返回url 中，以 ? 开头字符串 http://23.106.129.100/?f=json  => '?f=json'
+
+3.history 对象，
+    history.go(-1); // 后退一页  和  history.back();
+    history.go(1); // 前进一页    history.forward();

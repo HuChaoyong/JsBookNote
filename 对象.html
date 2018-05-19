@@ -18,6 +18,24 @@
         }
       }
     };
-    console.log(obj.getName()());
+    // console.log(obj.getName()());
+
+    var singleton = function() {
+      // 私有属性和方法
+      var privateVar = 10;
+      function privateFun() {
+        return false;
+      }
+      // 特权、公有方法和属性
+      return {
+        publicProperty: true,
+        publicMethod: function() {
+          privateVar ++;
+          return privaetFun();
+        }
+      };
+    }
+    console.log(singleton);
+    console.log(singleton.publicProperty);
   </script>
 </html>
