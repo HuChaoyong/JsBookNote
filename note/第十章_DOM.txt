@@ -1,0 +1,98 @@
+1. 层次结点
+
+    每个结点都有 childNodes 属性， 这个属性是一个类 Arrray的实例，有length，但不是 Array 类
+    .appendChild(node); // 添加结点， 并返回该结点
+    // 如果node 已经是文档的一部分了，那就会将该结点从原来的位置转移到新的位置 ！！！
+    .insertBefore(node, referenceNode); // referenceNode 参照的结点， 是插入到这个结点的前面
+    .replaceChild(newNode, oldNode); // 用 new 替换 old
+    .cloneNode(isDeepClone); // 克隆一个完全相同的副本, isDeepClone 为 true 表示深度复制，复制node和其子节点
+    // false 就只复制该结点， 复制完成后，newNode 是一个孤立的node
+
+    document 
+    .getElementById(id);
+    .getElementByName(name); // name 属性，
+
+    .anchors; // 所有的 带 name 特性的 <a>元素
+    .forms； // 包含文档中所有的 <form> 元素
+    .images; // 所有 <img> 元素
+    .links; // 所有带有  href 的 <a> 元素
+
+    Element； // getElementById();
+    .getAttribute('id'); // 获取id 特性值，就是在 <div id='div1'></div>
+    .setAttribute('id', 'div1'); // id 要设置的 特性名， div1  要设置的特性值
+    .removeAttribute('id'); // 移除 id 特性
+
+    DocumentFragment 类型 ，这是一个轻量级的文档， 可以包含和控制节点，但不会像完整的文档那样占用资源
+    在往一个 父元素遍历添加元素时，可以用来临时存储
+    const fragment = document.createDocumentFragment();
+    [1,2,3].forEach((item) => {
+        const li = document.createElement('li');
+        li.innerHtml = "item : " + item;
+        fragment.appendChild(li);
+    });
+    document.getElementById('myList').appendChild(fragment);
+
+2. Dom 操作技术
+    动态加载的外部javascript 文件能够立即运行,比如
+    <script type="text/javascript" src="client.js"></script>
+    动态脚本创建如下:
+    const script  =document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'client.js';
+    document.body.appendChild(script);
+    整理下，写一个函数来封装
+    function loadScript(url) {
+    const script  =document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+    document.body.appendChild(script);
+    }
+    另一种指定JavaScript 代码的方式是行内方式: (很常用的)
+    <script type="text/javascript">
+        console.log(" this is script ");
+    </script>
+
+    动态样式：
+    经典： <link rel="stylesheet" type="text/css" href="style.css">
+    动态：
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'style.css';
+    document.getElementByTagName('head')[0].appendChild(link);
+    抽析成函数
+    function loadStyle(url) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        document.getElementByTagName('head')[0].appendChild(link);
+    }
+    function loadStyleString(css) {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        try {
+            style.appendChild(document.createTextNode(css)); // IE在这种情况下要报错，捕获后，用另一种方式
+        } catch(ex) {
+            style.styleSheet.cssText = css;
+        }
+        const head = document.getElementByName('head')[0].appendChild(style);
+    }
+
+    NodeList 、 HTMLCollection
+    DOM最初设计时是为了解析XML， DodeList 接口是在 core 中体现的.
+    HTMLCollection 则是在 html 部分体现
+    这两个都是动态的， 意思就是 如果在其他任何地方增加或者减少了 ，
+    都能够直接体现出来。
+    比如在循环时, 每次判断都会去读取一次 .length, 由于是动态变化，所以这是个死循环
+    const oDiv = document.getElementByTagName('div'), i , div;
+    for (i = 0; i < oDiv.length; i++) {
+        div = document.createElement('div');
+        document.body.appendChild(div);
+    }
+    -----------正确的循环，将当时 length的值，保存在 len 中
+    const oDiv = document.getElementByTagName('div'), i , div, len;
+    for (i = 0, len = oDiv.length; i < len; i++) {
+        div = document.createElement('div');
+        document.body.appendChild(div);
+    }
