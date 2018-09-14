@@ -27,3 +27,27 @@ while(child != element.lastElementChild) {
 }
 ```
 ## HTML5
+1. getElementsByClassName 根据类名返回NodeList集合
+2. NodeList 元素增加 classList属性，可以通过 .add() .remove(), contains(), toggle() 来更方便的操作class
+3. document.activeElement 当前获取了焦点的元素(一般都是body)
+4. 可以为元素添加 自定义数据属性，但是要以 data- 开头
+> demo
+```html
+<div id="myDiv" data-appId="12345" data-myname="Jack">
+```
+```javascript
+var div = document.getElementById('myDidv');
+// get
+var appId = div.dataset.appId;
+var myName = div.dataset.myname;
+// set
+div.staset.appId = 'newValue';
+```
+5. outHTML 返回调用者及其子节点的HTML标签
+
+>注意操作dom时的内存与性能问题,删除元素前，先手删除被删元素的所有事件处理程序.
+
+6. children 属性 （HTMLCollection)实例
+7. contains(El) 方法， 返回调用者是否包含参数的El
+8. scrollIntoView() 将调用者滚动到视图窗口可见
+9. 
