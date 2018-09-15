@@ -4,19 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>camera</title>
-  <script>
-    // console.log(sum(11,2));
-    // console.log(hcy(11,2));
-    // function sum (num1 , num2) { return num1 + num2; }
-    // console.log(sum(1,2));
-
-
-    function al(e) {
-      console.log(e);
-    }
-  </script>
 </head>
 <body>
-  <input type="button" value="Click" onclick="al(this)">
+  <input type="button" id="hcy" value="Click">
 </body>
+<script>
+  // console.log(sum(11,2));
+  // console.log(hcy(11,2));
+  // function sum (num1 , num2) { return num1 + num2; }
+  // console.log(sum(1,2));
+  var oDiv = document.getElementById('hcy');
+  // var obj = {id: 'obj', name: 23};
+  // oDiv.onclick = function al(e) {
+  //   console.log(e);
+  //   console.log(this  );
+  //   console.log(this.id);
+  // }.bind(obj);
+
+    oDiv.addEventListener('click', () => {
+    console.log('冒泡阶段');
+  }, false);
+
+  oDiv.addEventListener('click', () => {
+    console.log('捕获阶段');
+  }, true);
+
+</script>
 </html>
